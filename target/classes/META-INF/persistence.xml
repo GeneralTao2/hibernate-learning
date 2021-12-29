@@ -1,0 +1,35 @@
+<!--
+  ~ Hibernate, Relational Persistence for Idiomatic Java
+  ~
+  ~ License: GNU Lesser General Public License (LGPL), version 2.1 or later.
+  ~ See the lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>.
+  -->
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
+
+    <persistence-unit name="localhost.hibernate.entity">
+        <description>
+            Persistence unit for the Envers tutorial of the Hibernate Getting Started Guide
+        </description>
+
+        <class>localhost.hibernate.entity.Student</class>
+
+        <properties>
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/test_ground_db?useSSL=false" />
+            <property name="javax.persistence.jdbc.user" value="root" />
+            <property name="javax.persistence.jdbc.password" value="" />
+            <property name="hibernate.physical_naming_strategy" value="localhost.hibernate.util.AcmeCorpPhysicalNamingStrategy" />
+            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.hbm2ddl.auto" value="update" />
+            <property name="hibernate.globally_quoted_identifiers" value="true" />
+            <property name="hibernate.metadata_builder_contributor" value="localhost.hibernate.util.SqlFunctionMetadataBuilderContributor" />
+
+
+        </properties>
+
+    </persistence-unit>
+
+</persistence>

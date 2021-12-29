@@ -1,0 +1,144 @@
+package localhost.hibernate;
+
+
+import localhost.hibernate.entity.*;
+import org.hibernate.engine.jdbc.BlobProxy;
+import org.hibernate.engine.jdbc.ClobProxy;
+
+import javax.money.MonetaryAmount;
+import javax.persistence.EntityManager;
+import java.io.*;
+import java.math.BigDecimal;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.SQLException;
+import java.time.Period;
+import java.util.*;
+import com.onbarcode.barcode.ISBN;
+
+import static localhost.hibernate.util.PersistenceUtil.getEntityManager;
+
+public class UseStudentDao {
+
+    public static void main(String[] args) throws IOException, SQLException {
+        TimeZone.setDefault( TimeZone.getTimeZone( "UTC" ) );
+        StudentDaoPersistence dao = new StudentDaoPersistence();
+        BitSet bitSet = BitSet.valueOf(new long[] { 0x0A, 0x0A });
+        bitSet.set(0x0A);
+        bitSet.set(0x0A);
+        File bigStringFile = new File("src/main/resources/bigstring.txt");
+        File bigStringFile1 = new File("src/main/resources/bigstring1.txt");
+        File image = new File("src/main/resources/image.jpg");
+
+        // can be saved only once
+        Clob clob = ClobProxy.generateProxy(
+                new FileReader(bigStringFile),
+                bigStringFile.length()
+        );
+        Clob clob1 = ClobProxy.generateProxy(
+                new FileReader(bigStringFile1),
+                bigStringFile1.length()
+        );
+        Blob blob = BlobProxy.generateProxy(
+                new FileInputStream(image),
+                image.length()
+        );
+        Blob blob1 = BlobProxy.generateProxy(
+                new FileInputStream(image),
+                image.length()
+        );
+
+
+        Student student = new Student(
+                0,
+                "1",
+                "2",
+                //bitSet,
+                "rameshfadatare@javaguides.com1",
+                new Caption("Hey"),
+                clob,
+                blob,
+                new Date(),
+                Period.of(1, 2, 3),
+                "123",
+                "qwerty",
+                1000d,
+                0.05d,
+                new Phone("123-456-7890", PhoneType.MOBILE),
+                new Phone("000-000-7890", PhoneType.LAND_LINE),
+                new GPS(123.456,456.123)
+                //new Phone()
+        );
+        Student student1 = new Student(
+                0,
+                "3",
+                "4",
+                //bitSet,
+                "john@javaguides.com1",
+                new Caption("Hi"),
+                clob1,
+                blob1,
+                new Date(),
+                Period.of(1, 2, 3),
+                "345",
+                "qwerty",
+                2000d,
+                0.02d,
+                new Phone("0298-456-7890", PhoneType.LAND_LINE),
+                new Phone("0298-111-1111", PhoneType.LAND_LINE),
+                new GPS(2123.456,2456.123)
+                //new Phone()
+        );
+        Country country1 = new Country(
+                "India"
+        );
+        Country country2 = new Country(
+                "Spain"
+        );
+        Book book1 = new Book(
+                "Java",
+                "author1",
+                "12345"
+        );
+        Book book2 = new Book(
+                "C++",
+                "author2",
+                "54321"
+        );
+        StudentDaoPersistence.deleteAllStudents();
+
+        EntityManager em = getEntityManager();
+        em.getTransaction().begin();
+        //em.persist(country1);
+        //em.persist(country2);
+        country1 = em.find(Country.class, 1L);
+        em.getTransaction().commit();
+        em = getEntityManager();
+        em.getTransaction().begin();
+        //em.persist(book1);
+        //em.persist(book2);
+        book1 = em.find(Book.class, 1L);
+        book2 = em.find(Book.class, 2L);
+        em.getTransaction().commit();
+
+        CurrentUser.INSTANCE.logIn( "Artiom" );
+        student.getPhone1().setCountry(country1);
+        student.getBooks().add(book1);
+        student.getBooks().add(book2);
+        dao.saveStudent(student);
+        CurrentUser.INSTANCE.logOut();
+        CurrentUser.INSTANCE.logIn( "Alice" );
+        dao.saveStudent(student1);
+        List<Integer> idList = StudentDaoPersistence.getIdList();
+        System.out.println(dao.getStudent(idList.get(0)).toString());
+        System.out.println(dao.getStudent(idList.get(1)).toString());
+        Student student2 = dao.getStudent(idList.get(0));
+        System.out.println("interest: " + student2.getCoordinates().getStudent().getInterest());
+        student2.setFirstName("Updated");
+        dao.updateStudent(student2);
+        CurrentUser.INSTANCE.logOut();
+        student = dao.getStudent(idList.get(0));
+        System.out.println(student.getBooks().contains(book1));
+
+    }
+}
